@@ -1,18 +1,13 @@
 <template>
-  <div class="flex-1 overflow-y-auto p-5 mb-10" ref="messageContainer">
-    <div v-if="messages.length === 0" class="text-center text-gray-400 mt-5">
-      No messages in this channel yet.
-    </div>
-    <div v-else>
-      <div v-for="message in messages" :key="message.id" class="flex items-start mb-5">
-        <img :src="`https://ui-avatars.com/api/?name=${getSender(message.senderId).fullname.replace(' ', '+')}`" class="w-10 h-10 rounded-full mr-3" alt="Avatar" />
-        <div class="max-w-4/5">
-          <div class="flex items-center mb-1">
-            <span class="font-bold mr-2">{{ getSender(message.senderId).fullname }}</span>
-            <span class="text-xs text-gray-500">{{ message.formattedCreatedAt }}</span>
-          </div>
-          <div class="text-sm leading-relaxed break-words whitespace-pre-wrap">{{ message.content }}</div>
+  <div class="message-list">
+    <div v-for="message in messages" :key="message.id" class="message">
+      <img :src="message.avatar" class="avatar" alt="Avatar" />
+      <div class="message-content">
+        <div class="message-header">
+          <span class="message-user">{{ message.user }}</span>
+          <span class="message-time">{{ formatTime(message.time) }}</span>
         </div>
+        <div class="message-text">{{ message.text }}</div>
       </div>
     </div>
   </div>
@@ -20,55 +15,82 @@
 
 <script>
 export default {
-  computed: {
-    messages() {
-      return this.$store.getters.getMessagesForActiveChannel;
-    },
-    activeChannelId() {
-      let channel = this.$store.state.activeChannel;
-      if (!channel) {
-        return null;
-      }
-      return channel.id;
-    }
-  },
-  watch: {
-    messages: {
-      handler() {
-        this.$nextTick(() => {
-          this.scrollToBottom();
-        });
-      },
-      deep: true
-    },
-    activeChannelId(newChannelId) {
-      if (newChannelId) {
-        this.fetchMessages(newChannelId);
-      }
-    }
+  data() {
+    return {
+      messages: [
+        {
+          id: 1,
+          user: 'Alice',
+          avatar: 'https://via.placeholder.com/40',
+          text: 'Hello there!',
+          time: '2024-08-17T09:00:00Z',
+        },
+        {
+          id: 2,
+          user: 'Bob',
+          avatar: 'https://via.placeholder.com/40',
+          text: 'Hi Alice! How are you?',
+          time: '2024-08-17T09:05:00Z',
+        },
+      ],
+    };
   },
   methods: {
-    fetchMessages(channelId) {
-      this.$store.dispatch('fetchMessagesForChannel', channelId);
+    formatTime(time) {
+      const date = new Date(time);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     },
-    getSender(userId) {
-      return this.$store.getters.getUserById(userId);
-    },
-    scrollToBottom() {
-      const container = this.$refs.messageContainer;
-      if (container) {
-        container.scrollTop = container.scrollHeight;
-      }
-    }
   },
-  mounted() {
-    if (this.activeChannelId) {
-      this.fetchMessages(this.activeChannelId);
-    }
-    this.scrollToBottom();
-  },
-  updated() {
-    this.scrollToBottom();
-  }
 };
 </script>
+
+<style scoped>
+/* Container styling */
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Individual message styling */
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.message-content {
+  max-width: 80%;
+}
+
+/* Header styling: username and timestamp */
+.message-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.message-user {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.message-time {
+  font-size: 12px;
+}
+
+/* Message text styling */
+.message-text {
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+</style>
