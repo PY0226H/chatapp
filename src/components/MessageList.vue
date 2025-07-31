@@ -21,14 +21,14 @@ export default {
         {
           id: 1,
           user: 'Alice',
-          avatar: 'https://via.placeholder.com/40',
+          avatar: 'https://ui-avatars.com/api/?name=Alice&background=6366f1&color=fff&size=40',
           text: 'Hello there!',
           time: '2024-08-17T09:00:00Z',
         },
         {
           id: 2,
           user: 'Bob',
-          avatar: 'https://via.placeholder.com/40',
+          avatar: 'https://ui-avatars.com/api/?name=Bob&background=10b981&color=fff&size=40',
           text: 'Hi Alice! How are you?',
           time: '2024-08-17T09:05:00Z',
         },
